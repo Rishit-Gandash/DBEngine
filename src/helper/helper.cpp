@@ -21,3 +21,7 @@ fs::path filePath(std::string dbName){
 fs::path dirPath(){
     return fs::current_path() / "db";
 }
+
+bool lineStartsWith(std::string line, std::string prefix) {
+    return line.rfind(prefix, 0) == 0;
+}

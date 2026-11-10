@@ -183,3 +183,157 @@ int test_create_table() {
     std::cout << "All create_table tests successful\n";
     return 0;
 }
+
+int test_create_row() {
+    // Test 1: Simplest case - Creating a row in an existing table
+    std::string dbName = "testdb";
+    std::string tableName = "users";
+
+    create_database(dbName);
+
+    std::vector<Column> columns = {
+        {"id", COLUMN_INT},
+        {"name", COLUMN_STR}
+    };
+
+    create_table(dbName, tableName, columns);
+
+    std::vector<Value> values = {
+        {VALUE_INT, 1},
+        {VALUE_STR, "John"}
+    };
+
+    fs::path fPath = filePath(dbName);
+
+    if(create_row(dbName, tableName, values) == 0 && fs::exists(fPath)){
+        std::cout << "SUCCESS: Test 1 passed\n";
+        fs::remove_all(dirPath());
+    } else {
+        std::cout << "ERROR: Test 1 Failed\n";
+        std::cout << "FilePath: " << fPath << "\n";
+        std::cout << "DirPath: " << dirPath() << "\n";
+        return -1;
+    }
+
+    // Test 2: Checking if row content is written properly
+    dbName = "testdb";
+    tableName = "users";
+
+    create_database(dbName);
+
+    columns = {
+        {"id", COLUMN_INT},
+        {"name", COLUMN_STR}
+    };
+
+    create_table(dbName, tableName, columns);
+
+    values = {
+        {VALUE_INT,  1},
+        {VALUE_STR, "John"}
+    };
+
+    fPath = filePath(dbName);
+
+    if(create_row(dbName, tableName, values) == 0 && fs::exists(fPath)){
+        std::ifstream file(fPath);
+        std::string line;
+        std::vector<std::string> lines;
+
+        while(std::getline(file, line)){
+            lines.push_back(line);
+        }
+
+        if(lines.size() >= 6 &&
+           lines[2] == "TABLE: USERS" &&
+           lines[4] == "ROW 0 : id :: INT : name :: STR" &&
+           lines[5] == "ROW : 1 : John"){
+
+            std::cout << "SUCCESS: Test 2 passed\n";
+            // fs::remove_all(dirPath());
+        } else {
+            std::cout << "ERROR: Test 2 Failed\n";
+
+            for(const std::string& l : lines){
+                std::cout << l << "\n";
+            }
+
+            return -1;
+        }
+    } else {
+        std::cout << "ERROR: Test 2 Failed\n";
+        return -1;
+    }
+
+    // Test 3: Checking multiple row insertions
+    dbName = "testdb";
+    tableName = "users";
+
+    create_database(dbName);
+
+    columns = {
+        {"id", COLUMN_INT},
+        {"name", COLUMN_STR}
+    };
+
+    create_table(dbName, tableName, columns);
+
+    values = {
+        {VALUE_INT, 1},
+        {VALUE_STR, "John"}
+    };
+
+    fPath = filePath(dbName);
+
+    bool success = create_row(dbName, tableName, values) == 0;
+
+    values = {
+        {VALUE_INT, 2},
+        {VALUE_STR, "Alice"}
+    };
+
+    success = success && create_row(dbName, tableName, values) == 0;
+
+    values = {
+        {VALUE_INT, 3},
+        {VALUE_STR, "Bob"}
+    };
+
+    success = success && create_row(dbName, tableName, values) == 0;
+
+    if(success && fs::exists(fPath)){
+        std::ifstream file(fPath);
+        std::string line;
+        std::vector<std::string> lines;
+
+        while(std::getline(file, line)){
+            lines.push_back(line);
+        }
+
+        if(lines.size() >= 10 &&
+           lines[2] == "TABLE: USERS" &&
+           lines[4] == "ROW 0 : id :: INT : name :: STR" &&
+           lines[5] == "ROW : 1 : John" &&
+           lines[7] == "ROW : 2 : Alice" &&
+           lines[9] == "ROW : 3 : Bob"){
+
+            std::cout << "SUCCESS: Test 3 passed\n";
+            fs::remove_all(dirPath());
+        } else {
+            std::cout << "ERROR: Test 3 Failed\n";
+
+            for(const std::string& l : lines){
+                std::cout << l << "\n";
+            }
+
+            return -1;
+        }
+    } else {
+        std::cout << "ERROR: Test 3 Failed\n";
+        return -1;
+    }
+
+
+    std::cout << "All create_row tests successful\n";
+    return 0;
+}

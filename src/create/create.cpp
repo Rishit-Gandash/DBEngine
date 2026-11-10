@@ -24,6 +24,7 @@ You can create a row, you must specify info for each column
 
 #include "../helper/helper.h"
 #include "../column/column.h"
+#include "../value/value.h"
 #include <filesystem>
 #include <fstream>
 #include <ios>
@@ -101,6 +102,69 @@ int create_table(std::string dbName, std::string tableName, std::vector<Column>&
             }
         }
         dbFile << "\n";
+        dbFile.close();
+        return 0;
+    } else {
+        std::cout << "Could not open database file\n";
+        return -1;
+    }
+}
+
+int create_row(std::string dbName, std::string tableName, std::vector<Value>& values){
+    fs::path dbFilePath = filePath(dbName);
+
+    if(!fs::exists(dbFilePath)){
+        std::cout << "database does not exist\n";
+        return -1;
+    }
+
+    std::fstream dbFile(dbFilePath, std::ios::in | std::ios::out);
+
+    if(dbFile.is_open()){
+        dbFile.clear();
+        dbFile.seekg(0, std::ios::beg);
+        std::string line;
+        if(!(std::getline(dbFile, line) && line == "DATABASE NAME " + stringToUpper(dbName))){
+            std::cout << "invalid database name\n";
+            return -1;
+        }
+
+        bool tableFound = false;
+
+        while(std::getline(dbFile, line)){
+            if(line == "TABLE: " + stringToUpper(tableName)){
+                tableFound = true;
+                break;
+            }
+        }
+
+        if(!tableFound) {
+            std::cout << "could not find table to write data to\n";
+            return -1;
+        }
+
+        std::getline(dbFile, line); // skip table name line
+        std::getline(dbFile, line); // skip empty line, now points to row 
+
+        while(lineStartsWith(line, "ROW")){
+            std::getline(dbFile, line); // skip all rows
+        }
+
+        dbFile.clear();
+        dbFile.seekp(dbFile.tellg()); // puts the write ptr at the read ptr
+
+        dbFile << "ROW";
+
+        for(const Value& value: values){
+            dbFile << " : ";
+            if(value.type == VALUE_INT){
+                dbFile << std::get<int>(value.data);
+            } else if (value.type == VALUE_STR){
+                dbFile << std::get<std::string>(value.data);
+            }
+        }
+        dbFile << "\n";
+        dbFile << "\n"; // Empty line
         dbFile.close();
         return 0;
     } else {
