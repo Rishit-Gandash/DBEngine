@@ -134,7 +134,7 @@ int test_create_table() {
            lines[4] == "ROW 0 : id :: INT : name :: STR"){
 
             std::cout << "SUCCESS: Test 2 passed\n";
-            // fs::remove_all(dirPath());
+            fs::remove_all(dirPath());
         } else {
             std::cout << "ERROR: Test 2 Failed\n";
             std::cout << "FilePath: " << fPath << "\n";
@@ -143,6 +143,38 @@ int test_create_table() {
         }
     } else {
         std::cout << "ERROR: Test 2 Failed\n";
+        std::cout << "FilePath: " << fPath << "\n";
+        std::cout << "DirPath: " << dirPath() << "\n";
+        return -1;
+    }
+    
+    // Test 3 Multiple Tables
+    dbName = "testdb";
+    std::string tableName1 = "users";
+    std::string tableName2 = "teachers";
+
+    create_database(dbName);
+
+    std::vector<Column> columns1 = {
+        {"id", COLUMN_INT},
+        {"name", COLUMN_STR}
+    };
+
+    std::vector<Column> columns2 = {
+        {"id", COLUMN_INT},
+        {"name", COLUMN_STR},
+        {"age", COLUMN_INT}
+    };
+
+    fPath = filePath(dbName);
+    int t1 = create_table(dbName, tableName1, columns1);
+    int t2 = create_table(dbName, tableName2, columns2);
+
+    if(t1 == 0 && t2 == 0 && fs::exists(fPath)){
+        std::cout << "SUCCESS: Test 3 passed\n";
+        fs::remove_all(dirPath());
+    } else {
+        std::cout << "ERROR: Test 3 Failed\n";
         std::cout << "FilePath: " << fPath << "\n";
         std::cout << "DirPath: " << dirPath() << "\n";
         return -1;

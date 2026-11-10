@@ -1,4 +1,5 @@
 #!/bin/bash
+rm -rf db
 g++ tests/main.cpp \
     tests/create_test.cpp \
     src/create/create.cpp \
