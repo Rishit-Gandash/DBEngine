@@ -1,0 +1,45 @@
+Database Engine
+
+A database is just a file with tables in it, we must have some way of seperating tables
+
+Perhaps formatted like this? 
+
+
+DATABASE INFO
+
+    TABLE: TABLE_NAME
+
+    ROW 0: COLUMN 1: COLUMN 2: ... 
+    ROW 1: COLUMN_1_DATA : COLUMN_2_DATA : ..
+
+Create functions: 
+
+You can create a database, creation of a database just means that a file is created with atleast the db info line
+
+You can create a table, you must specify the columns in a strict format, expression evaluation will not be handled here
+Perhaps it may be useful to mangle an id column here
+
+The data in columns can be ints or strings
+
+You can create a row, you must specify info for each column
+
+Read functions: 
+
+You can read a specific row, can be identified by minimal expressions, we load a row into memory when we have to print it
+
+You can read the entire table, we perform the above on each row
+
+You can read a specific value of a row, we load the row into memory and find the specific column
+
+TODO: Elaborate on how COLUMN_1_DATA is shaped exactly
+
+Update functions: 
+
+You can update a database to create a new table
+
+You can update a table to create a new column (All we have to is essentially load the column row into memory and append it
+the database keeps the structure of the column row in mind while doing any of its operations)
+
+You can update a row to change some entry
+
+
