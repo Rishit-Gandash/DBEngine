@@ -250,7 +250,7 @@ int test_create_row() {
            lines[5] == "ROW : 1 : John"){
 
             std::cout << "SUCCESS: Test 2 passed\n";
-            // fs::remove_all(dirPath());
+            fs::remove_all(dirPath());
         } else {
             std::cout << "ERROR: Test 2 Failed\n";
 
@@ -285,21 +285,21 @@ int test_create_row() {
 
     fPath = filePath(dbName);
 
-    bool success = create_row(dbName, tableName, values) == 0;
+    bool success = (create_row(dbName, tableName, values) == 0);
 
     values = {
         {VALUE_INT, 2},
         {VALUE_STR, "Alice"}
     };
 
-    success = success && create_row(dbName, tableName, values) == 0;
+    success = success && (create_row(dbName, tableName, values) == 0);
 
     values = {
         {VALUE_INT, 3},
         {VALUE_STR, "Bob"}
     };
 
-    success = success && create_row(dbName, tableName, values) == 0;
+    success = success && (create_row(dbName, tableName, values) == 0);
 
     if(success && fs::exists(fPath)){
         std::ifstream file(fPath);
@@ -310,17 +310,17 @@ int test_create_row() {
             lines.push_back(line);
         }
 
-        if(lines.size() >= 10 &&
+        if(
            lines[2] == "TABLE: USERS" &&
            lines[4] == "ROW 0 : id :: INT : name :: STR" &&
            lines[5] == "ROW : 1 : John" &&
-           lines[7] == "ROW : 2 : Alice" &&
-           lines[9] == "ROW : 3 : Bob"){
+           lines[6] == "ROW : 2 : Alice" &&
+           lines[7] == "ROW : 3 : Bob"){
 
             std::cout << "SUCCESS: Test 3 passed\n";
             fs::remove_all(dirPath());
         } else {
-            std::cout << "ERROR: Test 3 Failed\n";
+            std::cout << "ERROR: Test 3 Failed at matching\n";
 
             for(const std::string& l : lines){
                 std::cout << l << "\n";

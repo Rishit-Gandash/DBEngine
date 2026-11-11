@@ -164,7 +164,6 @@ int create_row(std::string dbName, std::string tableName, std::vector<Value>& va
             }
         }
         dbFile << "\n";
-        dbFile << "\n"; // Empty line
         dbFile.close();
         return 0;
     } else {
